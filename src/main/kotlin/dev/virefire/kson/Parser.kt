@@ -5,8 +5,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
-import dev.virefire.kson.exceptions.JsonElementNotExistException
-import dev.virefire.kson.exceptions.JsonInvalidElementTypeException
+import dev.virefire.kson.exceptions.JsonElementNotFoundException
+import dev.virefire.kson.exceptions.JsonTypeMismatchException
 
 private fun getTypeName(element: JsonElement): String {
     return when (element) {
@@ -32,17 +32,17 @@ class ParsedElement(private var json: JsonElement?) {
 
     operator fun get(key: String): ParsedElement {
         if (json !is JsonObject)
-            throw JsonInvalidElementTypeException("Trying to get \"$key\" on ${getTypeName(json!!)} (${json!!}), only supported on map")
+            throw JsonTypeMismatchException("Trying to get \"$key\" on ${getTypeName(json!!)} (${json!!}), only supported on map")
         if (!json!!.asJsonObject.has(key))
-            throw JsonElementNotExistException("Element \"$key\" doesn't exist in map ${json!!}")
+            throw JsonElementNotFoundException("Element \"$key\" doesn't exist in map ${json!!}")
         return ParsedElement(json!!.asJsonObject.get(key))
     }
 
     operator fun get(key: Int): ParsedElement {
         if (json !is JsonArray)
-            throw JsonInvalidElementTypeException("Trying to get $key on ${getTypeName(json!!)} (${json!!}), only supported on list")
+            throw JsonTypeMismatchException("Trying to get $key on ${getTypeName(json!!)} (${json!!}), only supported on list")
         if (json!!.asJsonArray.size() <= key)
-            throw JsonElementNotExistException("Element $key doesn't exist in list ${json!!}")
+            throw JsonElementNotFoundException("Element $key doesn't exist in list ${json!!}")
         return ParsedElement(json!!.asJsonArray.get(key))
     }
 
@@ -67,49 +67,49 @@ class ParsedElement(private var json: JsonElement?) {
     val string: String?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isString))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as String")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as String")
             return if (json!! is JsonNull) null else json!!.asString
         }
 
     val number: Number?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isNumber))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Number")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Number")
             return if (json!! is JsonNull) null else json!!.asNumber
         }
 
     val int: Int?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isNumber))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Int")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Int")
             return if (json!! is JsonNull) null else json!!.asInt
         }
 
     val long: Long?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isNumber))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Long")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Long")
             return if (json!! is JsonNull) null else json!!.asLong
         }
 
     val float: Float?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isNumber))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Float")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Float")
             return if (json!! is JsonNull) null else json!!.asFloat
         }
 
     val double: Double?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isNumber))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Double")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Double")
             return if (json!! is JsonNull) null else json!!.asDouble
         }
 
     val boolean: Boolean?
         get () {
             if (json !is JsonNull && (json !is JsonPrimitive || !json!!.asJsonPrimitive.isBoolean))
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Boolean")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Boolean")
             return if (json!! is JsonNull) null else json!!.asBoolean
         }
 
@@ -118,7 +118,7 @@ class ParsedElement(private var json: JsonElement?) {
             if (json!! is JsonNull)
                 return null
             if (json!! !is JsonArray)
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as List")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as List")
             return json!!.asJsonArray.map { ParsedElement(it) }
         }
 
@@ -127,7 +127,7 @@ class ParsedElement(private var json: JsonElement?) {
             if (json!! is JsonNull)
                 return null
             if (json!! !is JsonObject)
-                throw JsonInvalidElementTypeException("Trying to get ${getTypeName(json!!)} (${json!!}) as Map")
+                throw JsonTypeMismatchException("Trying to get ${getTypeName(json!!)} (${json!!}) as Map")
             val map = mutableMapOf<String, ParsedElement>()
             json!!.asJsonObject.entrySet().forEach {
                 map[it.key] = ParsedElement(it.value)
