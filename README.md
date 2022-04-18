@@ -28,7 +28,7 @@ dependencies {
 | **3. [Exceptions](#exceptions)**       |
 
 ### Serializing
-KSON has similar API as JavaScript. For example, to serialize a Kotlin map to a JSON object, you can use the following code:
+KSON has API that similar to JavaScript. For example, to serialize a Kotlin map to a JSON object, you can use the following code:
 ```kotlin
 fun main() {
     val json = KSON.stringify(mapOf(
@@ -66,15 +66,15 @@ fun main() {
         val name = "John"
         val age = 30
         val isDeveloper = true
-        val address = Address(
-            city = "New York",
-            country = "USA"
-        )
+        val address = object {
+            val city = "New York"
+            val country = "USA"
+        }
     })
     println(json)
 }
 ```
-If you serialize an object or class instance, you can control the serialization process by using som annotations:
+If you serialize an object or class instance, you can control the serialization process by using some annotations:
 ```kotlin
 fun main() {
     val json = KSON.stringify(object {
@@ -82,10 +82,10 @@ fun main() {
         val age = 30
         @JsonName("is_developer")
         val isDeveloper = true
-        val address = Address(
-            city = "New York",
-            country = "USA"
-        )
+        val address = object {
+            val city = "New York"
+            val country = "USA"
+        }
         @Hidden
         val password = "123456"
         @HideIfNull
@@ -94,7 +94,7 @@ fun main() {
     println(json)
 }
 ```
-`@JsonName` is used to change the name of the field. `@Hidden` is used to hide the field. `@HideIfNull` is used to hide the field if the value is null (by default null values are serializing to JSON null).
+`@JsonName` is used to change the name of the field. `@Hidden` is used to hide the field. `@HideIfNull` is used to hide the field if the value is null (by default null values are serialized to JSON null).
 
 You can also get beautified JSON with indentation:
 ```kotlin
@@ -103,10 +103,10 @@ fun main() {
         val name = "John"
         val age = 30
         val isDeveloper = true
-        val address = Address(
-            city = "New York",
-            country = "USA"
-        )
+        val address = object {
+            val city = "New York"
+            val country = "USA"
+        }
     }, " ".repeat(4)) // Set indentation to 4 spaces
     println(json)
 }
@@ -153,19 +153,19 @@ fun main() {
             "optional": null
         }
     """.trimIndent()
-    val json = KSON.parse(json)
-    println(json["name"].string) // John
-    println(json["age"].int) // 30
-    println(json["isDeveloper"].boolean) // true
-    println(json["address"]["city"].string) // New York
-    println(json["hobbies"][0].string) // Programming
-    for (friend in json["friends"].list) {
+    val data = KSON.parse(json)
+    println(data["name"].string) // John
+    println(data["age"].int) // 30
+    println(data["isDeveloper"].boolean) // true
+    println(data["address"]["city"].string) // New York
+    println(data["hobbies"][0].string) // Programming
+    for (friend in data["friends"].list!!) {
         println(friend["name"].string) // Jane, Bob
     }
-    println(json["optional"].isNull) // true
-    println(json["optional"].string) // null
-    println(json["age"].isNumber) // true
-    println(json["age"].isString) // false
+    println(data["optional"].isNull) // true
+    println(data["optional"].string) // null
+    println(data["age"].isNumber) // true
+    println(data["age"].isString) // false
 }
 ```
 
