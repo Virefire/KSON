@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.virefire.kson:KSON:1.0.0")
+    implementation("dev.virefire.kson:KSON:1.1.0")
 }
 ```
 
