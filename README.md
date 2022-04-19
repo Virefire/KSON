@@ -1,6 +1,6 @@
 # KSON - Kotlin JSON library based on GSON
 
-![Open issues](https://img.shields.io/github/issues-raw/Rikonardo/KiORM)
+![Open issues](https://img.shields.io/github/issues-raw/Virefire/KSON)
 
 💼 **This readme contains full library documentation/tutorial!**
 
