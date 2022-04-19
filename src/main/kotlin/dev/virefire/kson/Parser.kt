@@ -50,19 +50,19 @@ class ParsedElement(private var json: JsonElement?) {
         get () = json!! is JsonNull
 
     val isString: Boolean
-        get () = json!!.isJsonPrimitive && json!!.asJsonPrimitive.isString
+        get () = json!! is JsonNull || (json!!.isJsonPrimitive && json!!.asJsonPrimitive.isString)
 
     val isNumber: Boolean
-        get () = json!!.isJsonPrimitive && json!!.asJsonPrimitive.isNumber
+        get () = json!! is JsonNull || (json!!.isJsonPrimitive && json!!.asJsonPrimitive.isNumber)
 
     val isBoolean: Boolean
-        get () = json!!.isJsonPrimitive && json!!.asJsonPrimitive.isBoolean
+        get () = json!! is JsonNull || (json!!.isJsonPrimitive && json!!.asJsonPrimitive.isBoolean)
 
     val isList: Boolean
-        get () = json!!.isJsonArray
+        get () = json!! is JsonNull || json!!.isJsonArray
 
     val isMap: Boolean
-        get () = json!!.isJsonObject
+        get () = json!! is JsonNull || json!!.isJsonObject
 
     val string: String?
         get () {

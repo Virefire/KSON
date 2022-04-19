@@ -162,12 +162,16 @@ fun main() {
     for (friend in data["friends"].list!!) {
         println(friend["name"].string) // Jane, Bob
     }
-    println(data["optional"].isNull) // true
-    println(data["optional"].string) // null
     println(data["age"].isNumber) // true
     println(data["age"].isString) // false
+    println(data["optional"].isNull) // true
+    println(data["optional"].int) // null
+    println(data["optional"].string) // null
+    println(data["optional"].isNumber) // true
+    println(data["optional"].isString) // true
 }
 ```
+Note that on null fields, all "is" checks return true. It's because we can get null value as any type.
 
 ### Exceptions
 There are two exceptions that can be thrown by KSON:
