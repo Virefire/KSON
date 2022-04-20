@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.virefire.kson:KSON:1.1.0")
+    implementation("dev.virefire.kson:KSON:1.2.0")
 }
 ```
 
@@ -172,6 +172,35 @@ fun main() {
 }
 ```
 Note that on null fields, all "is" checks return true. It's because we can get null value as any type.
+
+By default, attempting to get a field that does not exist, or getting an element from a field whose type is not a map or list, will throw an exception. You can change this behavior by switching to silent mode. Then it will return null instead of throwing an exception.
+
+```kotlin
+fun main() {
+    val json = """
+        {
+            "name": "John",
+            "age": 30,
+            "isDeveloper": true,
+            "address": {
+                "city": "New York",
+                "country": "USA"
+            }
+        }
+    """.trimIndent()
+    val data = KSON.parse(json)
+    println(data.silent["name"]["some_field"].isNull) // true
+    println(data.silent["address"]["some_field"].string) // null
+    println(data["name"]["some_field"]) // JsonTypeMismatchException
+    println(data["address"]["some_field"]) // JsonElementNotFoundException
+}
+```
+
+You can also write it like this:
+```kotlin
+val data = KSON.parse(json).silent
+println(data["name"]["some_field"].isNull) // true
+```
 
 ### Exceptions
 There are two exceptions that can be thrown by KSON:

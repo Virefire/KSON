@@ -23,27 +23,42 @@ private fun getTypeName(element: JsonElement): String {
     }
 }
 
-class ParsedElement(private var json: JsonElement?) {
+class ParsedElement(private var json: JsonElement?, private val isSilent: Boolean) {
     init {
         if (json == null) {
             json = JsonNull.INSTANCE
         }
     }
 
+    constructor(json: JsonElement?) : this(json, false)
+
+    private fun throwOrNull(e: Throwable): ParsedElement {
+        if (isSilent) return ParsedElement(JsonNull.INSTANCE, true)
+        throw e
+    }
+
+    val silent: ParsedElement
+        get() = ParsedElement(json, true)
+
     operator fun get(key: String): ParsedElement {
         if (json !is JsonObject)
-            throw JsonTypeMismatchException("Trying to get \"$key\" on ${getTypeName(json!!)} (${json!!}), only supported on map")
+            return throwOrNull(JsonTypeMismatchException("Trying to get \"$key\" on ${getTypeName(json!!)} (${json!!}), only supported on map"))
         if (!json!!.asJsonObject.has(key))
-            throw JsonElementNotFoundException("Element \"$key\" doesn't exist in map ${json!!}")
+            return throwOrNull(JsonElementNotFoundException("Element \"$key\" doesn't exist in map ${json!!}"))
         return ParsedElement(json!!.asJsonObject.get(key))
     }
 
     operator fun get(key: Int): ParsedElement {
         if (json !is JsonArray)
-            throw JsonTypeMismatchException("Trying to get $key on ${getTypeName(json!!)} (${json!!}), only supported on list")
+            return throwOrNull(JsonTypeMismatchException("Trying to get $key on ${getTypeName(json!!)} (${json!!}), only supported on list"))
         if (json!!.asJsonArray.size() <= key)
-            throw JsonElementNotFoundException("Element $key doesn't exist in list ${json!!}")
+            return throwOrNull(JsonElementNotFoundException("Element $key doesn't exist in list ${json!!}"))
         return ParsedElement(json!!.asJsonArray.get(key))
+    }
+
+    fun has(key: String): Boolean {
+        if (json !is JsonObject) return false
+        return json!!.asJsonObject.has(key)
     }
 
     val isNull: Boolean
