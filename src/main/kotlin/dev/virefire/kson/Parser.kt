@@ -23,14 +23,12 @@ private fun getTypeName(element: JsonElement): String {
     }
 }
 
-class ParsedElement(private var json: JsonElement?, private val isSilent: Boolean) {
+class ParsedElement(private var json: JsonElement?, private val isSilent: Boolean = false) {
     init {
         if (json == null) {
             json = JsonNull.INSTANCE
         }
     }
-
-    constructor(json: JsonElement?) : this(json, false)
 
     private fun throwOrNull(e: Throwable): ParsedElement {
         if (isSilent) return ParsedElement(JsonNull.INSTANCE, true)
@@ -45,7 +43,7 @@ class ParsedElement(private var json: JsonElement?, private val isSilent: Boolea
             return throwOrNull(JsonTypeMismatchException("Trying to get \"$key\" on ${getTypeName(json!!)} (${json!!}), only supported on map"))
         if (!json!!.asJsonObject.has(key))
             return throwOrNull(JsonElementNotFoundException("Element \"$key\" doesn't exist in map ${json!!}"))
-        return ParsedElement(json!!.asJsonObject.get(key))
+        return ParsedElement(json!!.asJsonObject.get(key), isSilent)
     }
 
     operator fun get(key: Int): ParsedElement {
@@ -53,7 +51,7 @@ class ParsedElement(private var json: JsonElement?, private val isSilent: Boolea
             return throwOrNull(JsonTypeMismatchException("Trying to get $key on ${getTypeName(json!!)} (${json!!}), only supported on list"))
         if (json!!.asJsonArray.size() <= key)
             return throwOrNull(JsonElementNotFoundException("Element $key doesn't exist in list ${json!!}"))
-        return ParsedElement(json!!.asJsonArray.get(key))
+        return ParsedElement(json!!.asJsonArray.get(key), isSilent)
     }
 
     fun has(key: String): Boolean {
