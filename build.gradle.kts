@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.virefire.kson"
-version = "1.3.0"
+version = "1.3.1"
 
 repositories {
     mavenCentral()
@@ -15,6 +15,10 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.9.0")
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 tasks.withType<KotlinCompile> {
